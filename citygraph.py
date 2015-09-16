@@ -1,47 +1,41 @@
+from operator import itemgetter
+
 class City:
-	name = ""
-	lat = 0
-	lon = 0
-	neighbors = []
-	
+
 	def __init__(self, name, lat=0, lon=0):
 		self.name = name
 		self.lat = lat
 		self.lon = lon
-
-	def successor(self, ordering):
-		if ordering == "time":
-			return self.neighbors
-		elif ordering == "segments":
-			return self.neighbors
-		elif ordering == "distance":
-			return self.neighbors
+		self.neighbors = []
 
 	def add_neighbor(self, neighbor):
-		self.neighbors.append(neighbor)
+		self.neighbors.insert(0,neighbor)
 
 	def get_neighbors(self):
 		return self.neighbors
 
 class Road:
-	name = ""
-	a = ""
-	b = ""
-	length = 0
-	speed = 0
 
-	def __init__(self, name, a, b, length, speed):
+	def __init__(self, name, a, b, dist, speed):
 		self.name = name
 		self.a = a
 		self.b = b
-		self.length = length
-		self.speed = speed
+		self.dist = int(dist)
+		self.speed = int(speed)
 
 	def time(self):
-		return 1.0*self.length/self.speed;
+		return  float(self.dist)/self.speed if self.speed != 0 else 10000000
+
+	def distance(self):
+		return self.dist
 
 	def connected_cities(self):
 		return (self.a, self.b)
+
+	def equals(self, r):
+		sconn = self.connected_cities()
+		rconn = r.connected_cities()
+		return sconn == rconn or sconn[::-1] == rconn
 
 class Graph:
 	nodes = {}
@@ -55,3 +49,15 @@ class Graph:
 
 	def insert_edge(self, e):
 		self.edges[e.name] = e
+
+	def successor(self, city, ordering):
+		n = self.nodes[city]
+		neighbors = n.get_neighbors()
+		if ordering == "time":
+			sorted_neighbors = sorted(neighbors, key=itemgetter(1))
+			return sorted_neighbors
+		elif ordering == "distance":
+			sorted_neighbors = sorted(neighbors, key=itemgetter(2))
+			return sorted_neighbors
+		else:
+			 return neighbors
