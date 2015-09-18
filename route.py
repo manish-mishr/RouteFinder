@@ -8,12 +8,18 @@ def main():
 	process_files(cities_file, roads_file, g)
 	test_sorting(g)
 
-	initial_city = 'Milan,_Tennessee'
-	goal_city = 'Ardmore,_Oklahoma'
+	initial_city = 'Bloomington,_Indiana'
+	goal_city = 'Indianapolis,_Indiana'
 
-	queue = deque
-	queue.appendleft(())
-	generic_search(g, 'bfs', )
+
+	queue = deque()
+	queue.appendleft((initial_city, 0, 0, ''))
+	ans = generic_search(g, 'bfs', queue, 'segments', goal_city)
+	print ans
+	c = g.nodes[ans[0]]
+	while c.parent != '' and c.name != initial_city:
+		print c.name
+		c = g.nodes[c.parent.name]
 
 
 def generic_search(g, search_type, queue, successor_param, goal):
@@ -26,17 +32,25 @@ def generic_search(g, search_type, queue, successor_param, goal):
 	elif search_type == 'a*':
 		pop = queue.get
 		push = queue.put
+	else:
+		return 'Invalid search type'
+
+	seen = {}
 
 	while(1):
+		if len(queue) == 0: return 'Failure'
 		node = pop()
-		if node[0] == goal: return node[3]
-		if queue.empty(): return 'Failure'
+		if node[0] == goal: return node
+		seen[node[0]] = node[0]
 		for s in g.successor(node[0], successor_param):
-			s[3] += ',' + node[0]
-			push(s)
-
-
-	pass
+			if s in seen:
+				continue
+			s_prime = (s[0], s[1]+node[1], s[2]+node[2])
+			child_city = g.nodes[s[0]]
+			parent_city = g.nodes[node[0]]
+			parent_city.add_child(child_city)
+			child_city.set_parent(parent_city)
+			push(s_prime)
 
 
 def process_files(cities_file, roads_file, g):
@@ -59,7 +73,10 @@ def process_files(cities_file, roads_file, g):
 				temp[3] = '20'
 			g.insert_edge(Road(temp[4]+":"+temp[0]+":"+temp[1], temp[0], temp[1], temp[2], temp[3]))
 		elif 'JCT' in temp[0].upper() or 'JCT' in temp[1].upper():
-			g.insert_node(City(temp[0]))
+			if 'JCT' in temp[0].upper() and not temp[0] in unique_cities:
+				g.insert_node(City(temp[0]))
+			elif not temp[1] in unique_cities:
+				g.insert_node(City(temp[1]))
 			unique_cities = g.nodes
 		else:
 			#print 'No city found for road: ' + line
@@ -70,11 +87,11 @@ def process_files(cities_file, roads_file, g):
 	print 'Roads discarded: ' + str(roads_discarded)
 	print 'Text files processed successfully'
 
-	# test_city = 'Ardmore,_Oklahoma'
-	# for road in g.edges:
-	# 	conn = g.edges[road].connected_cities()
-	# 	if test_city in conn:
-	# 		print conn
+	test_city = 'Jct_I-465_&_IN_37_S,_Indiana'
+	for road in g.edges:
+		conn = g.edges[road].connected_cities()
+		if test_city in conn:
+			print conn
 
 	for edge in g.edges:
 		road = g.edges[edge]
@@ -83,8 +100,8 @@ def process_files(cities_file, roads_file, g):
 		b = conn[1]
 		# if a == test_city or b == test_city:
 		# 	print conn
-		g.nodes[a].add_neighbor((b, road.time(), road.distance()))
-		g.nodes[b].add_neighbor((a, road.time(), road.distance()))
+		g.nodes[a].add_neighbor((b, road.time(), road.distance(), ''))
+		g.nodes[b].add_neighbor((a, road.time(), road.distance(), ''))
 
 	total_neighbors = 0
 	num_cities = 0
@@ -98,7 +115,7 @@ def process_files(cities_file, roads_file, g):
 	print 'City neighbors populated'
 
 def test_sorting(g):
-	test_city = 'Milan,_Tennessee'
+	test_city = 'Jct_I-465_&_IN_37_S,_Indiana'
 	print 'Ordered by insertion'
 	print g.nodes[test_city].get_neighbors()
 	print 'Ordered by time'

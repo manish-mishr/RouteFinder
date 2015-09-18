@@ -7,12 +7,23 @@ class City:
 		self.lat = lat
 		self.lon = lon
 		self.neighbors = []
+		self.children = []
+		self.parent = ''
 
 	def add_neighbor(self, neighbor):
 		self.neighbors.insert(0,neighbor)
 
 	def get_neighbors(self):
 		return self.neighbors
+
+	def add_child(self, child):
+		self.children.insert(0,child)
+
+	def set_parent(self, p):
+		if self.parent != '':
+			return
+		else:
+			self.parent = p
 
 class Road:
 
@@ -50,14 +61,18 @@ class Graph:
 	def insert_edge(self, e):
 		self.edges[e.name] = e
 
-	def successor(self, city, ordering):
+	def successor(self, c, ordering):
+		if type(c) == tuple:
+			city = c[0]
+		else:
+			city = c
 		n = self.nodes[city]
 		neighbors = n.get_neighbors()
-		if ordering == "time":
-			sorted_neighbors = sorted(neighbors, key=itemgetter(1))
-			return sorted_neighbors
-		elif ordering == "distance":
-			sorted_neighbors = sorted(neighbors, key=itemgetter(2))
-			return sorted_neighbors
+		if ordering == 'time':
+			#print neighbors
+			#print sorted(neighbors, key=itemgetter(1))
+			return sorted(neighbors, key=itemgetter(1))
+		elif ordering == 'distance':
+			return sorted(neighbors, key=itemgetter(2))
 		else:
 			 return neighbors
