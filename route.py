@@ -1,25 +1,47 @@
 from citygraph import *
 from collections import deque
+from Queue import PriorityQueue
+import sys
 
 def main():
 	cities_file = open('city-gps.txt','r')
 	roads_file = open('road-segments.txt','r')
 	g = Graph()
 	process_files(cities_file, roads_file, g)
-	test_sorting(g)
+	#test_sorting(g)
 
-	initial_city = 'Bloomington,_Indiana'
-	goal_city = 'Indianapolis,_Indiana'
+	argv = sys.argv
+	initial_city = argv[1]
+	goal_city = argv[2]
+	optimize = argv[3]
+	search_algo = argv[4]
 
+	if not (initial_city in g.nodes) or not (goal_city in g.nodes):
+		print 'Invalid input'
+		return
 
-	queue = deque()
-	queue.appendleft((initial_city, 0, 0, ''))
-	ans = generic_search(g, 'bfs', queue, 'segments', goal_city)
+	print(g.heuristic(initial_city, goal_city))
+
+	if search_algo == 'bfs' or search_algo == 'dfs':
+		queue = deque()
+		queue.appendleft((initial_city, 0, 0, ''))
+	elif search_algo == 'astar':
+		queue = PriorityQueue()
+		queue.put((g.heuristic(initial_city, goal_city),(initial_city, 0, 0, '')))
+	else:
+		print 'Invalid input'
+		return
+
+	ans = generic_search(g, search_algo, queue, optimize, goal_city)
 	print ans
+	answer_string = str(ans[2]) + ' ' + str(ans[1])
 	c = g.nodes[ans[0]]
+	route_str = ''
 	while c.parent != '' and c.name != initial_city:
-		print c.name
+		route_str = c.name + ' ' + route_str
 		c = g.nodes[c.parent.name]
+	route_str = initial_city + ' ' + route_str[:-1]
+	print answer_string + ' ' + route_str
 
 
 def generic_search(g, search_type, queue, successor_param, goal):
@@ -29,7 +51,7 @@ def generic_search(g, search_type, queue, successor_param, goal):
 	elif search_type == 'dfs':
 		pop = queue.pop
 		push = queue.append
-	elif search_type == 'a*':
+	elif search_type == 'astar':
 		pop = queue.get
 		push = queue.put
 	else:
@@ -38,19 +60,29 @@ def generic_search(g, search_type, queue, successor_param, goal):
 	seen = {}
 
 	while(1):
-		if len(queue) == 0: return 'Failure'
+		if search_type != 'astar' and len(queue) == 0:
+			return 'Failure'
+		elif search_type == 'astar' and queue.empty():
+			return 'Failure'
 		node = pop()
+		if search_type == 'astar':
+			#print node
+			node = node[1]
 		if node[0] == goal: return node
 		seen[node[0]] = node[0]
 		for s in g.successor(node[0], successor_param):
-			if s in seen:
+			if s[0] in seen:
 				continue
 			s_prime = (s[0], s[1]+node[1], s[2]+node[2])
 			child_city = g.nodes[s[0]]
 			parent_city = g.nodes[node[0]]
 			parent_city.add_child(child_city)
 			child_city.set_parent(parent_city)
-			push(s_prime)
+			if search_type == 'astar':
+				s_prio = (g.heuristic(s[0], goal), s_prime)
+				push(s_prio)
+			else:
+				push(s_prime)
 
 
 def process_files(cities_file, roads_file, g):
@@ -68,16 +100,16 @@ def process_files(cities_file, roads_file, g):
 	for line in roads_file:
 		temp = line.split(' ')
 		roads_added += 1
+		if 'JCT' in temp[0].upper() or 'JCT' in temp[1].upper():
+			if 'JCT' in temp[0].upper() and not temp[0] in unique_cities:
+				g.insert_node(City(temp[0]))
+			if 'JCT' in temp[1].upper() and not temp[1] in unique_cities:
+				g.insert_node(City(temp[1]))
+			unique_cities = g.nodes
 		if temp[0] in unique_cities and temp[1] in unique_cities:
 			if temp[3] == '':
 				temp[3] = '20'
 			g.insert_edge(Road(temp[4]+":"+temp[0]+":"+temp[1], temp[0], temp[1], temp[2], temp[3]))
-		elif 'JCT' in temp[0].upper() or 'JCT' in temp[1].upper():
-			if 'JCT' in temp[0].upper() and not temp[0] in unique_cities:
-				g.insert_node(City(temp[0]))
-			elif not temp[1] in unique_cities:
-				g.insert_node(City(temp[1]))
-			unique_cities = g.nodes
 		else:
 			#print 'No city found for road: ' + line
 			roads_discarded += 1
@@ -87,19 +119,17 @@ def process_files(cities_file, roads_file, g):
 	print 'Roads discarded: ' + str(roads_discarded)
 	print 'Text files processed successfully'
 
-	test_city = 'Jct_I-465_&_IN_37_S,_Indiana'
-	for road in g.edges:
-		conn = g.edges[road].connected_cities()
-		if test_city in conn:
-			print conn
+	# test_city = 'Jct_I-465_&_IN_37_S,_Indiana'
+	# for road in g.edges:
+	# 	conn = g.edges[road].connected_cities()
+	# 	if test_city in conn:
+	# 		print conn
 
 	for edge in g.edges:
 		road = g.edges[edge]
 		conn = road.connected_cities()
 		a = conn[0]
 		b = conn[1]
-		# if a == test_city or b == test_city:
-		# 	print conn
 		g.nodes[a].add_neighbor((b, road.time(), road.distance(), ''))
 		g.nodes[b].add_neighbor((a, road.time(), road.distance(), ''))
 

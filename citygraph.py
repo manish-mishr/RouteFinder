@@ -1,11 +1,12 @@
 from operator import itemgetter
+from math import sin, cos, sqrt, atan2, radians
 
 class City:
 
 	def __init__(self, name, lat=0, lon=0):
 		self.name = name
-		self.lat = lat
-		self.lon = lon
+		self.lat = float(lat)
+		self.lon = float(lon)
 		self.neighbors = []
 		self.children = []
 		self.parent = ''
@@ -35,7 +36,9 @@ class Road:
 		self.speed = int(speed)
 
 	def time(self):
-		return  float(self.dist)/self.speed if self.speed != 0 else 10000000
+		if self.speed == 0:
+			self.speed = 1
+		return  float(self.dist)/self.speed
 
 	def distance(self):
 		return self.dist
@@ -76,3 +79,28 @@ class Graph:
 			return sorted(neighbors, key=itemgetter(2))
 		else:
 			 return neighbors
+
+	#Using the crows-flight distance, which is well documented online but this
+	#code is taken from http://stackoverflow.com/questions/19412462/getting-distance-between-two-points-based-on-latitude-longitude-python
+	#with slight modifications (miles vs. km)
+	def heuristic(self, cn1, cn2):
+		c1 = self.nodes[cn1]
+		c2 = self.nodes[cn2]
+		if c1.lat == 0 or c1.lon == 0 or c2.lat == 0 or c2.lon == 0:
+			return 0
+		# approximate radius of earth in miles
+		R = 3960.0
+
+		lat1 = radians(c1.lat)
+		lon1 = radians(c1.lon)
+		lat2 = radians(c2.lat)
+		lon2 = radians(c2.lon)
+
+		dlon = lon2 - lon1
+		dlat = lat2 - lat1
+
+		a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+		c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+		distance = R * c
+		return distance
