@@ -1,67 +1,155 @@
-#!/usr/bin/env python
+
 import itertools
-mylist=[ [ 'Amplifier','Banister','Candel','Doorknob','Elephant'], ['Frank','George','Heather','Irene','Jerry',],  		   		['Kirkwood','Lake','Maxwell','North','Orange'] ]
 
-oldlist = list(itertools.product(*mylist))
-print len(oldlist)
+def main():
+	mylist=[ [ 'Amplifier','Banister','Candel','Doorknob','Elephant'], ['Frank','George','Heather','Irene','Jerry',], ['Kirkwood','Lake','Maxwell','North','Orange'] ]
 
-process_list=[item for item in oldlist if not((item[0]=='Doorknob' and  item[1]=='Frank') or (item[1]=='George' and item[2]=='Kirkwood')or(item[1]=='Heather' and item[2]=='Orange') or (item[0]=='Banister' and item[1]=='Irene') or (item[0]=='Elephant' and item[2]=='North')
-or(item[0]=='Amplifier' and item[2]=='Maxwell'))]
+	oldlist = list(itertools.product(*mylist))
 
-print len(process_list)
+	process_list=[item for item in oldlist if not((item[0]=='Doorknob' and  item[1]=='Frank') or (item[1]=='George' and item[2]=='Kirkwood')or(item[1]=='Heather' and item[2]=='Orange') or (item[0]=='Banister' and item[1]=='Irene') or (item[0]=='Elephant' and item[2]=='North')
+	or(item[0]=='Amplifier' and item[2]=='Maxwell'))]
 
-list_amplifier=[item for item in process_list if item[0]=='Amplifier']
-list_banister=[item for item in process_list if item[0]=='Banister']
-list_candel=[item for item in process_list if item[0]=='Candel']
-list_doorknob=[item for item in process_list if item[0]=='Doorknob']
-list_elephant=[item for item in process_list if item[0]=='Elephant']
+	list_amplifier=[item for item in process_list if item[0]=='Amplifier']
+	list_banister=[item for item in process_list if item[0]=='Banister']
+	list_candel=[item for item in process_list if item[0]=='Candel']
+	list_doorknob=[item for item in process_list if item[0]=='Doorknob']
+	list_Elephant=[item for item in process_list if item[0]=='Elephant']
 
-#print list_banister
-
-test_list=[]
-for item_candel in list_candel:
-	unique_set=set()
-	unique_set.add(item_candel[1])
-	unique_set.add(item_candel[2])
-	test_list.append(item_candel)
-	for item_banister in list_banister:
-		if item_candel[1] in unique_set or item_candel[2] in unique_set: 
-			pass
-		else:
-			unique_set.add(item_banister[1])
-			unique_set.add(item_banister[2])
-			test_list.append(item_banister)
-			for item_amplifier in list_amplifier:
-				if item_amplifier[1] in unique_set or item_amplifier[2] in unique_set: 
-					pass
-				else:
-					unique_set.add(item_amplifier[1])
-					unique_set.add(item_amplifier[2])
-					test_list.append(item_amplifier)
-					for item_doorknob in list_doorknob:
-						if item_doorknob[1] in unique_set or item_doorknob[2] in unique_set: 
-							pass
-						else:
-							unique_set.add(item_doorknob[1])
-							unique_set.add(item_doorknob[2])
-							test_list.append(item_doorknob)
-							for item_elephant in list_elephant:
-								if item_elephant[1] in unique_set or item_elephant[2] in unique_set: 
-									pass
-								else:
-									unique_set.add(item_elephant[1])
-									unique_set.add(item_elephant[2])
-									test_list.append(item_elephant)
-									print unique_set
-									name=raw_input("y")
-#print test_list
+	for la in list_amplifier:
+		for lb in list_banister:
+			for lc in list_candel:
+				for ld in list_doorknob:
+					for le in list_Elephant:
+						if test_combination(la, lb, lc, ld, le):
+							if test_constraints(la, lb, lc, ld, le):
+								print str(la) + '\n' + str(lb) + '\n' + str(lc) + '\n' + str(ld) + '\n' + str(le)
 
 
 
+def test_combination(set1, set2, set3, set4, set5):
+	if set1[1] == set2[1]  or set1[1] == set3[1] or set1[1] == set4[1] or set1[1] == set5[1]:
+		return False
+	if set1[2] == set2[2]  or set1[2] == set3[2] or set1[2] == set4[2] or set1[2] == set5[2]:
+		return False
+
+	if set2[1] == set3[1] or set2[1] == set4[1] or set2[1] == set5[1]:
+		return False
+	if set2[2] == set3[2] or set2[2] == set4[2] or set2[2] == set5[2]:
+		return False
+
+	if set3[1] == set4[1] or set3[1] == set5[1]:
+		return False
+	if set3[2] == set4[2] or set3[2] == set5[2]:
+		return False
+
+	if set4[1] == set5[1] or set4[2] == set5[2]:
+		return False
+
+	return True
+
+class Neighborhood:
+
+	def __init__(self):
+		self.houses = []
+
+	def add_house(self, h):
+		self.houses.append(h)
+
+	def getHouse_Name(self, name):
+		for h in self.houses:
+			if h.name == name:
+				return h
+		return 'Failure'
+
+	def getHouse_Item(self, item):
+		for h in self.houses:
+			if h.item == item:
+				return h
+		return 'Failure'
+
+	def getHouse_Street(self, street):
+		for h in self.houses:
+			if h.street == street:
+				return h
+		return 'Failure'
+
+	def __str__(self):
+		out = ''
+		for h in self.houses:
+			out += str(h)
+		return out
+
+	def __repr__(self):
+		self.__str__()
+
+class House:
+
+	def __init__(self, name, item, street):
+		self.name = name
+		self.item = item
+		self.street = street
+
+	def __str__(self):
+		return '('+self.item+',' + self.name + ',' + self.street + ')'
+
+	def __repr__(self):
+		return self.__str__()
+
+
+def test_constraints(set1, set2, set3, set4, set5):
+
+	n = Neighborhood()
+	n.add_house(House(set1[1],set1[0],set1[2]))
+	n.add_house(House(set2[1],set2[0],set2[2]))
+	n.add_house(House(set3[1],set3[0],set3[2]))
+	n.add_house(House(set4[1],set4[0],set4[2]))
+	n.add_house(House(set5[1],set5[0],set5[2]))
+
+	house_list =  ['Kirkwood','Lake','Maxwell','North','Orange']
+
+	d = {}
+	d['Banister'] = n.getHouse_Item('Candel')
+
+	irene_item = n.getHouse_Name('Irene').item
+	d[irene_item] = n.getHouse_Item('Banister')
+
+	if 'Doorknob' in d.keys():
+	 	return False
+	d['Doorknob'] = n.getHouse_Name('Frank')
+
+	if 'Amplifier' in d.keys():
+		return False
+	d['Amplifier'] = n.getHouse_Street('Maxwell')
+
+	if 'Elephant' in d.keys():
+		return False
+	d['Elephant'] = n.getHouse_Street('North')
+
+	if d[n.getHouse_Street('Lake').item] != n.getHouse_Street('Kirkwood'):
+		return False
+
+	if d[n.getHouse_Street('Kirkwood').item] != n.getHouse_Name('George'):
+		return False
+
+	if d[n.getHouse_Street('Orange').item] != n.getHouse_Name('Heather'):
+		return False
+
+	if d[n.getHouse_Name('Heather').item] != n.getHouse_Name('Jerry'):
+		return False
+
+	if d[n.getHouse_Street('Maxwell').item] != n.getHouse_Item('Elephant'):
+		return False
+
+	solution = set()
+	for k in d.keys():
+		solution.add(d[k])
+	if len(solution) == 5:
+		return True
+
+	return False
 
 
 
 
-
-
-
+if __name__ == '__main__':
+	main()
