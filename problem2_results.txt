@@ -1,0 +1,28 @@
+[thijbens@garter kumar20-thijbens-a1]$ time python route.py Bloomington,_Indiana Fort_Kent,_Maine time astar
+Number of roads: 11820
+Roads discarded: 249
+Text files processed successfully
+Number of cities: 6389
+Average number of neighbors: 3.69948348724
+City neighbors populated
+1058.85396713
+('Fort_Kent,_Maine', 34.13224553224552, 1654)
+1654 34.1322455322 Bloomington,_Indiana Columbus,_Indiana Greensburg,_Indiana New_Trenton,_Indiana Miamitown,_Ohio Taylor_Creek,_Ohio Bevis,_Ohio Springdale,_Ohio Miamisburg,_Ohio Beavercreek,_Ohio West_Lancaster,_Ohio Midway,_Ohio Lafayette,_Ohio New_California,_Ohio Delaware,_Ohio Marion,_Ohio Mansfield,_Ohio Wooster,_Ohio Canton,_Ohio Salem,_Ohio Canfield,_Ohio Austintown,_Ohio Churchill,_Ohio West_Middlesex,_Pennsylvania Jamestown,_Pennsylvania Meadville,_Pennsylvania Mill_Village,_Pennsylvania Irvine,_Pennsylvania Warren,_Pennsylvania Timbuck,_Pennsylvania Carrollton,_New_York Springville,_New_York Yorkshire,_New_York Belvidere,_New_York Avoca,_New_York Painted_Post,_New_York Watkins_Glen,_New_York Waterloo,_New_York Auburn,_New_York LaFayette,_New_York Cazenovia,_New_York Sangerfield,_New_York Utica,_New_York Poland,_New_York Speculator,_New_York Chestertown,_New_York Underwood,_New_York Keeseville,_New_York Plattsburgh,_New_York Champlain,_New_York Alburg,_Vermont Swanton,_Vermont Sheldon_Junction,_Vermont North_Troy,_Vermont Derby_Center,_Vermont West_Charleston,_Vermont Jct_VT_105_&_VT_114_S,_Vermont Island_Pond,_Vermont Norton,_Vermont West_Stewartstown,_New_Hampshire Colebrook,_New_Hampshire Errol,_New_Hampshire Rangeley,_Maine Stratton,_Maine Kingfield,_Maine North_Anson,_Maine Solon,_Maine Bingham,_Maine Abbot_Village,_Maine Guilford,_Maine Sangerville,_Maine Dover-Foxcroft,_Maine Lagrange,_Maine Howland,_Maine Sherman,_Maine Knowles_Corner,_Maine Ashland,_Maine Fort_Kent,_Maine
+
+real	0m0.234s
+user	0m0.129s
+sys	0m0.014s
+[thijbens@garter kumar20-thijbens-a1]$ time python route.py Bloomington,_Indiana Fort_Kent,_Maine time bfs
+Number of roads: 11820
+Roads discarded: 249
+Text files processed successfully
+Number of cities: 6389
+Average number of neighbors: 3.69948348724
+City neighbors populated
+1058.85396713
+('Fort_Kent,_Maine', 32.12687846203974, 1664)
+1664 32.126878462 Bloomington,_Indiana Martinsville,_Indiana Jct_I-465_&_IN_37_S,_Indiana Indianapolis,_Indiana Castleton,_Indiana Daleville,_Indiana Bethel,_Indiana Markle,_Indiana Jct_I-69_&_I-469_S,_Indiana Hessen-Cassel,_Indiana New_Haven,_Indiana Napoleon,_Ohio Maumee,_Ohio Toledo,_Ohio Monroe,_Michigan Jct_I-275_&_US_24,_Michigan Southgate,_Michigan Lincoln_Park,_Michigan Jct_I-75_&_M-3,_Michigan Jct_ON_2_&_ON_3,_Ontario Windsor,_Ontario Jct_ON_401_&_ON_3B,_Ontario Jct_ON_401_&_Essex_19,_Ontario London,_Ontario Toronto,_Ontario Ivy_Lea,_Ontario Fishers_Landing,_New_York Watertown,_New_York Gouverneur,_New_York Malone,_New_York Champlain,_New_York Alburg,_Vermont Swanton,_Vermont Sheldon_Junction,_Vermont North_Troy,_Vermont Derby_Center,_Vermont West_Charleston,_Vermont Jct_VT_105_&_VT_114_S,_Vermont Island_Pond,_Vermont North_Stratford,_New_Hampshire Colebrook,_New_Hampshire Errol,_New_Hampshire Rangeley,_Maine Stratton,_Maine Kingfield,_Maine North_Anson,_Maine Solon,_Maine Skowhegan,_Maine Newport,_Maine Dexter,_Maine Dover-Foxcroft,_Maine Lagrange,_Maine Howland,_Maine Sherman,_Maine Knowles_Corner,_Maine Ashland,_Maine Fort_Kent,_Maine
+
+real	2m30.873s
+user	2m30.768s
+sys	0m0.138s
