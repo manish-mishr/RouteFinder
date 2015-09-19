@@ -37,7 +37,7 @@ class Road:
 
 	def time(self):
 		if self.speed == 0:
-			self.speed = 1
+			self.speed = 20
 		return  float(self.dist)/self.speed
 
 	def distance(self):
@@ -64,26 +64,18 @@ class Graph:
 	def insert_edge(self, e):
 		self.edges[e.name] = e
 
-	def successor(self, c, ordering):
+	def successor(self, c):
 		if type(c) == tuple:
 			city = c[0]
 		else:
 			city = c
 		n = self.nodes[city]
-		neighbors = n.get_neighbors()
-		if ordering == 'time':
-			#print neighbors
-			#print sorted(neighbors, key=itemgetter(1))
-			return sorted(neighbors, key=itemgetter(1))
-		elif ordering == 'distance':
-			return sorted(neighbors, key=itemgetter(2))
-		else:
-			 return neighbors
+		return n.get_neighbors()
 
 	#Using the crows-flight distance, which is well documented online but this
 	#code is taken from http://stackoverflow.com/questions/19412462/getting-distance-between-two-points-based-on-latitude-longitude-python
 	#with slight modifications (miles vs. km)
-	def heuristic(self, cn1, cn2):
+	def heuristic(self, cn1, cn2, param, data):
 		c1 = self.nodes[cn1]
 		c2 = self.nodes[cn2]
 		if c1.lat == 0 or c1.lon == 0 or c2.lat == 0 or c2.lon == 0:
@@ -103,4 +95,16 @@ class Graph:
 		c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
 		distance = R * c
-		return distance
+
+		if param == 'distance':
+			if distance == 0:
+				return distance
+			return 1.0/distance
+		elif param == 'time':
+			if data == 0:
+				data = 20
+			return float(distance)/data
+		elif param == 'segments':
+			if cn1 == cn2:
+				return 0
+			return float(data)/distance
